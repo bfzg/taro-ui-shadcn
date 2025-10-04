@@ -30,25 +30,13 @@ export async function init() {
         message: '组件安装路径:',
         default: 'src/components/ui',
       },
-      {
-        type: 'confirm',
-        name: 'typescript',
-        message: '使用 TypeScript?',
-        default: true,
-      },
-      {
-        type: 'confirm',
-        name: 'tailwind',
-        message: '使用 Tailwind CSS?',
-        default: true,
-      },
     ]);
 
-    // 创建配置文件
+    // 创建配置文件 - 默认使用 TypeScript 和 Tailwind CSS
     const config = {
       componentsPath: answers.componentsPath,
-      typescript: answers.typescript,
-      tailwind: answers.tailwind,
+      typescript: true,
+      tailwind: true,
     };
 
     await fs.writeJson(path.join(process.cwd(), 'taro-ui-shadcn.json'), config, { spaces: 2 });
@@ -58,7 +46,7 @@ export async function init() {
     await fs.ensureDir(componentsDir);
 
     // 创建工具函数目录和文件
-    const utilsDir = path.join(componentsDir, '../utils');
+    const utilsDir = path.join(process.cwd(), 'src/utils');
     await fs.ensureDir(utilsDir);
 
     // 复制工具函数
@@ -124,12 +112,11 @@ export function cva<T extends ConfigSchema>(
   };
 }`;
 
-    const fileExtension = answers.typescript ? '.ts' : '.js';
-    await fs.writeFile(path.join(utilsDir, `cn${fileExtension}`), cnUtilContent);
-    await fs.writeFile(path.join(utilsDir, `cva${fileExtension}`), cvaUtilContent);
+    // 总是使用 TypeScript
+    await fs.writeFile(path.join(utilsDir, 'cn.ts'), cnUtilContent);
+    await fs.writeFile(path.join(utilsDir, 'cva.ts'), cvaUtilContent);
 
-    // 如果使用 Tailwind CSS，创建基础样式文件
-    if (answers.tailwind) {
+    // 总是创建 Tailwind CSS 基础样式文件
       const stylesDir = path.join(process.cwd(), 'src/styles');
       await fs.ensureDir(stylesDir);
 
@@ -194,16 +181,12 @@ export function cva<T extends ConfigSchema>(
 }`;
 
       await fs.writeFile(path.join(stylesDir, 'globals.css'), globalCssContent);
-    }
 
     console.log(chalk.green('✅ 初始化完成！'));
     console.log(chalk.blue('📁 组件将安装到:'), answers.componentsPath);
     console.log(chalk.blue('🔧 配置文件已创建:'), 'taro-ui-shadcn.json');
-    
-    if (answers.tailwind) {
-      console.log(chalk.blue('🎨 全局样式文件已创建:'), 'src/styles/globals.css');
-      console.log(chalk.yellow('💡 请确保在你的应用中引入 globals.css 文件'));
-    }
+    console.log(chalk.blue('🎨 全局样式文件已创建:'), 'src/styles/globals.css');
+    console.log(chalk.yellow('💡 请确保在你的应用中引入 globals.css 文件'));
 
     console.log(chalk.blue('\n🚀 现在你可以添加组件了:'));
     console.log(chalk.gray('  npx taro-ui-shadcn add button'));
