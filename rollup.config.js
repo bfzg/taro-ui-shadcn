@@ -19,6 +19,7 @@ export default [
     ],
     external: [
       'react',
+      'react/jsx-runtime',
       '@tarojs/taro',
       '@tarojs/components'
     ],

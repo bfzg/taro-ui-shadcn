@@ -1,6 +1,6 @@
 {
   "name": "taro-ui-shadcn",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "基于Taro的UI组件库，支持通过npx直接生成组件代码到本地",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
